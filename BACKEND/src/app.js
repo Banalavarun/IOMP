@@ -9,6 +9,9 @@ import cors from "cors";
 
 import { connectToSocket } from "./controllers/socketManagers.js";
 
+import dotenv from "dotenv";
+dotenv.config();
+
 const app = express();
 
 const server = createServer(app); 
@@ -18,7 +21,9 @@ const server = createServer(app);
 const io = connectToSocket(server); 
 //This line initializes a new Socket.io server instance and attaches it to the HTTP server.
 
-
+app.use(cors());
+app.use(express.json({limit:"40kb"}));
+app.use(express.urlencoded({limit:"40kb",extended:true}));
 app.set("port", (process.env.PORT || 8000));
 
 
@@ -27,7 +32,7 @@ app.get("/home",(req,res)=>{
 })
 
 const start = async ()=>{
-    const connectionDB = await mongoose.connect("mongodb+srv://varunProject:h1f4fr223@varunprojectcluster.8hjoo.mongodb.net/");
+    const connectionDB = await mongoose.connect(process.env.DB_URI);
     console.log(`connection done to ${connectionDB.connection.host}`);
     server.listen(app.get("port"),()=>{
         console.log("server started");
